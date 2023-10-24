@@ -1,0 +1,149 @@
+import psycopg2
+import csv
+import pandas as pd
+
+# Establish a database connection
+conn = psycopg2.connect(host="localhost", user="postgres", password="SQLpriya", port=5432, database="phonepe_project")
+sand = conn.cursor()
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS aggregated_transaction (
+        State VARCHAR,
+        Year INT,
+        Quarter INT,
+        Transaction_type VARCHAR,
+        Transaction_count INT,
+        Transaction_amount NUMERIC
+    )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+# # Now you can insert data into the 'aggregated_transaction' table
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\aggregated_transaction.csv")
+query = "INSERT INTO aggregated_transaction(State, Year, Quarter, Transaction_type, Transaction_count, Transaction_amount) VALUES (%s, %s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS aggregated_user (
+      State VARCHAR,
+      Year INT,
+      Quarter INT,
+      Brands VARCHAR,
+      User_Count INT,
+      User_Percentage DOUBLE PRECISION
+  )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+# # Now you can insert data into the 'aggregated_user' table
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\aggregated_user.csv")
+query = "INSERT INTO aggregated_user(State, Year, Quarter, Brands, User_Count, User_Percentage) VALUES (%s, %s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+
+create_table_query = """
+ CREATE TABLE IF NOT EXISTS map_transaction (
+      State VARCHAR,
+      Year INT,
+      Quarter INT,
+      District VARCHAR,
+      Transaction_Count INT,
+      Transaction_Amount NUMERIC
+  )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+#  # Now you can insert data into the 'aggregated_user' table
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\map_transaction.csv")
+query = "INSERT INTO map_transaction(State,Year,Quarter,District,Transaction_Count,Transaction_Amount) VALUES (%s, %s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS map_user (
+      State VARCHAR,
+      Year INT,
+      Quarter INT,
+      District VARCHAR,
+      Registered_User INT,
+      app_opens INT  
+ )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+# # Now you can insert data into the 'map_user' table
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\map_users.csv")
+query = "INSERT INTO map_user(State, Year, Quarter, District, Registered_User, app_opens) VALUES (%s, %s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS top_transaction (
+     State VARCHAR,
+     Year INT,  
+     Quarter INT,  
+     District_Pincode BIGINT, 
+     Transaction_count INT, 
+     Transaction_amount NUMERIC   
+ )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+# Read the CSV file
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\top_transaction.csv")
+
+# Modify the 'District_Pincode' values to fit within the BIGINT range
+df['District_Pincode'] = df['District_Pincode'].astype('Int64')  # Convert to Nullable Integer type
+df = df.dropna(subset=['District_Pincode'])  # Remove rows with NULL District_Pincode
+df['District_Pincode'] = df['District_Pincode'].astype(int)  # Convert to int
+
+# Now you can insert data into the 'top_transaction' table
+query = "INSERT INTO top_transaction(State, Year, Quarter, District_Pincode, Transaction_count, Transaction_amount) VALUES (%s, %s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+
+
+create_table_query = """
+CREATE TABLE IF NOT EXISTS top_user (
+     State VARCHAR,
+     Year INT,
+     Quarter INT,
+     District_Pincode BIGINT,
+     Registered_User INT
+ )
+"""
+sand.execute(create_table_query)
+conn.commit()
+
+# # Now you can insert data into the 'top_user' table
+df = pd.read_csv(r"c:\Users\Lenovo\Downloads\top_user.csv")
+query = "INSERT INTO top_user(State, Year, Quarter, District_Pincode, Registered_User) VALUES (%s, %s, %s, %s, %s)"
+values = [tuple(x)[1:] for x in df.to_numpy()]
+sand.executemany(query, values)
+conn.commit()
+
+
+
+
+
+
+
+
+
+
